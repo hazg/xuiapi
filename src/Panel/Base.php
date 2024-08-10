@@ -263,10 +263,28 @@ class Base
         return $this->editInbound($enable, $id, $remark, $port, $protocol, $settings, $streamSettings, $total, $up, $down, $sniffing, $expiryTime, $listen);
     }
 
-    public function removeInbound($id)
+    public function removeInbound(int $id)
     {
         $this->setId($id);
         return $this->curl('delInbound', [], true);
+    }
+
+    public function getInboundBy(string $key, string $value) {
+        $inbonds = $this->listInbound();
+        foreach($inbonds['obj'] as $inbound) {
+            if($inbound[$key] === $value) {
+                return $inbound;
+            }
+        }
+        return false;
+    }
+
+    public function delInboundBy(string $key, string $value) {
+        $inbound = $this->getInboundBy($key, $value);
+        if($inbound) {
+            return $this->removeInbound($inbound['id']);
+        }
+        return false;
     }
 
     public function editClientWithKey($inboundId, $clientUuid, $key, $value)
